@@ -386,6 +386,9 @@ details.steps .inner{padding:0 14px 14px}
 .chart-key i.k-bar{width:12px;height:10px;border-radius:2px;background:var(--accent);opacity:.78}
 .chart-key i.k-curve{width:16px;height:3px;background:var(--ink)}
 .chart-key svg{display:block;flex:none}
+.calc-main{grid-template-areas:"in res" "chart res";align-items:start}
+.calc-main .calc-in{grid-area:in}.calc-main .calc-res{grid-area:res}.calc-main .chart-box{grid-area:chart;margin-top:0}
+@media (max-width:900px){.calc-main{grid-template-areas:"in" "res" "chart"}}
 /* frequency table: click to show, click again to hide */
 .split details.steps{margin-top:0}
 details.steps .when-open{display:none}
@@ -578,11 +581,11 @@ footer p{margin:4px 0;max-width:90ch}
     <div class="section-head">
       <div>
         <h2 id="calc-h">Descriptive statistics calculator</h2>
-        <p><b style="color:var(--ink);font-weight:600">Type or paste numbers separated by spaces, commas or new lines, or upload an Excel / CSV file.</b> Every result updates as you type, with the working shown step by step.</p>
+        <p>Type or paste numbers separated by spaces, commas or new lines, or upload an Excel / CSV file. Every result updates as you type, with the working shown step by step.</p>
       </div>
     </div>
     <div class="bench">
-      <div class="calc-grid">
+      <div class="calc-grid calc-main">
         <div class="calc-in">
           <div class="data-box">
             <div class="data-head">
@@ -612,17 +615,8 @@ footer p{margin:4px 0;max-width:90ch}
             </div>
           </div>
           <p class="status" id="calcStatus" aria-live="polite"></p>
-          <div>
-            <p class="panel-title">Histogram with frequency curve and box plot</p>
-            <div class="legend chart-key" aria-hidden="true">
-              <span><i class="k-bar"></i>Frequency (bars)</span>
-              <span><i class="k-curve"></i>Frequency curve</span>
-              <span><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle class="bx-out" cx="6" cy="6" r="4" style="stroke-width:2.2;fill:color-mix(in srgb,var(--out) 24%,var(--surface))"/></svg>Outlier (value shown)</span>
-            </div>
-            <div class="plot" id="calcChart"><svg id="calcSvg" role="img" aria-label="Histogram of your data with a frequency curve, mean and median lines, and a box plot with outliers labelled"></svg></div>
-          </div>
         </div>
-        <div>
+        <div class="calc-res">
           <details class="pick" id="statPick">
             <summary><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Choose which results to show <span class="pick-count" id="pickCount"></span></summary>
             <div class="pick-body">
@@ -640,6 +634,17 @@ footer p{margin:4px 0;max-width:90ch}
           </details>
           <div class="res-list" id="calcTiles"></div>
         </div>
+        <details class="steps chart-box" id="chartBox">
+          <summary><span class="when-closed">Show histogram with frequency curve and box plot</span><span class="when-open">Hide histogram with frequency curve and box plot</span></summary>
+          <div class="inner">
+            <div class="legend chart-key" aria-hidden="true">
+              <span><i class="k-bar"></i>Frequency (bars)</span>
+              <span><i class="k-curve"></i>Frequency curve</span>
+              <span><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle class="bx-out" cx="6" cy="6" r="4" style="stroke-width:2.2;fill:color-mix(in srgb,var(--out) 24%,var(--surface))"/></svg>Outlier (value shown)</span>
+            </div>
+            <div class="plot" id="calcChart"><svg id="calcSvg" role="img" aria-label="Histogram of your data with a frequency curve, mean and median lines, and a box plot with outliers labelled"></svg></div>
+          </div>
+        </details>
       </div>
       <div class="split">
         <div>
@@ -666,7 +671,7 @@ footer p{margin:4px 0;max-width:90ch}
     <div class="section-head">
       <div>
         <h2 id="ht-h">Hypothesis tests</h2>
-        <p><b style="color:var(--ink);font-weight:600">Choose a test, enter raw data or summary statistics, then set H₁ and α.</b> You get the test statistic, p-value and critical value, with the rejection region shown on the curve.</p>
+        <p>Choose a test, enter raw data or summary statistics, then set H₁ and α. You get the test statistic, p-value and critical value, with the rejection region shown on the curve.</p>
       </div>
     </div>
     <div class="bench">
@@ -710,7 +715,7 @@ footer p{margin:4px 0;max-width:90ch}
     <div class="section-head">
       <div>
         <h2 id="rg-h">Correlation and regression</h2>
-        <p><b style="color:var(--ink);font-weight:600">Enter paired X and Y values in the same order, or paste two columns from Excel into the X box.</b> Results and the scatter plot update as you type.</p>
+        <p>Enter paired X and Y values in the same order, or paste two columns from Excel into the X box. Results and the scatter plot update as you type.</p>
       </div>
     </div>
     <div class="bench">
@@ -1776,6 +1781,7 @@ function calcChart(d) {
   }
 }
 calcIn.addEventListener('input', () => { clearTimeout(calcIn._t); calcIn._t = setTimeout(calcRun, 120); });
+$('#chartBox').addEventListener('toggle', () => { if ($('#chartBox').open && calcLast) calcChart(calcLast); });
 /* data input: examples, random, sort, upload, drag and drop, clear with undo */
 function setData(vals, note) {
   calcIn.value = Array.isArray(vals) ? vals.join(', ') : vals;
